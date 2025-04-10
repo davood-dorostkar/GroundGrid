@@ -1,0 +1,9 @@
+time traffic_ts
+string status
+string ip
+string dns1
+string dns2
+uint64 tx_bytes
+uint64 rx_bytes
+float32 tx_bandwidth
+float32 rx_bandwidth

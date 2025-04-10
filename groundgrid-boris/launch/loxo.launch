@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<launch>
+    
+    <!-- If set to true, will use the all_sensors_topic (Type: loxo_msgs_ros1/AllSensors)
+         else will use the pointcloud_topic (Type: sensor_msgs/PointCloud2)           -->
+    <param name="use_all_sensors"                  value="True"/>
+
+    <param name="all_sensors_topic"                value="/data_merger/partial/all_sensors"/>
+    <param name="pointcloud_topic"                 value="/invz_front_merge"/>
+
+    <!-- Input pointcloud is downscaled with a voxel grid filer to reduce computing time -->
+    <param name="input_leaf_size"                 value="0.3"/>
+
+    <!-- Output pointcloud is filtered by a radius filter to remove false positives -->
+    <param name="output_radius_search"                value="0.5"/>
+    <param name="output_min_neighbors_in_radius"      value="6"/>
+
+
+    <arg name="use_nodelets"    default="$(optenv USE_NODELETS false)" />
+    <arg name="nodelet_manager" default="$(optenv NODELET_MANAGER core_nodelet_manager)" />
+    <!-- start standalone node -->
+    <node unless="$(arg use_nodelets)"
+          pkg="groundgrid"
+          name="groundgrid"
+          type="groundgrid_node"
+          output="screen"
+          >
+    </node>
+
+    <!-- start nodelet (nodelet manager needed, see below) -->
+    <node if="$(arg use_nodelets)"
+          pkg="nodelet"
+          type="nodelet"
+          name="groundgrid"
+          args="load groundgrid/Nodelet $(arg nodelet_manager)"
+          output="screen"
+    >
+    </node>
+
+    <!-- start nodelet manager, if not already started from outside of this launch file -->
+    <node if="$(arg use_nodelets)"
+        pkg="nodelet"
+        type="nodelet"
+        name="$(arg nodelet_manager)"
+        args="manager"
+    >
+        <param name="num_worker_threads" value="64" />
+    </node>
+</launch>

@@ -1,0 +1,33 @@
+services:
+  groundgrid:
+    image: ros:noetic-groundgrid
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: groundgrid
+    stdin_open: true
+    tty: true
+    privileged: true
+    network_mode: host
+    volumes:
+      # - ./groundgrid:/home/workspace/src/groundgrid
+      # - ./groundgrid-nicolas:/home/workspace/src/groundgrid
+      - ./groundgrid-boris:/home/workspace/src/groundgrid
+      - ./loxo-messages-ros1:/home/workspace/src/loxo-messages-ros1
+      - ./tools:/home/workspace/tools
+      - ./bags:/home/workspace/bags
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - $HOME/.Xauthority:/root/.Xauthority
+    environment:
+      - DISPLAY=$DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - SDL_VIDEODRIVER=x11
+    runtime: nvidia
+    deploy:
+        resources:
+            reservations:
+                devices:
+                    - driver: nvidia
+                      count: all
+                      capabilities:
+                          - gpu

@@ -1,0 +1,2 @@
+time stamp
+TrafficLightObservation[] data
